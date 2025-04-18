@@ -132,11 +132,14 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'sistema.auth.FirebaseAndTokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+CORS_ALLOW_ALL_ORIGINS = True  # Ajuste para produção
+CORS_ALLOW_CREDENTIALS = True
 
 # Django Allauth
 SITE_ID = 1

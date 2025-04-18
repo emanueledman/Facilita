@@ -1,11 +1,8 @@
 from django.db import models
-
-# Create your models here.
-import uuid
-from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-import bcrypt
+import uuid
+from django.core.exceptions import ValidationError
 
 # Enums
 class PapelUsuario(models.TextChoices):
@@ -14,7 +11,7 @@ class PapelUsuario(models.TextChoices):
     ADMIN_INSTITUICAO = 'admin_instituicao', 'Administrador de Instituição'
     ADMIN_FILIAL = 'admin_filial', 'Administrador de Filial'
 
-# Instituicao
+# Instituição
 class Instituicao(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nome = models.CharField(max_length=100)
@@ -84,6 +81,10 @@ class PerfilUsuario(models.Model):
             models.Index(fields=['filial']),
         ]
 
+    def clean(self):
+        if User.objects.filter(email=self.usuario.email).exclude(id=self.usuario.id).exists():
+            raise ValidationError("Email já está em uso.")
+
     def definir_senha(self, senha):
         if senha:
             self.usuario.set_password(senha)
@@ -114,7 +115,7 @@ class PreferenciaUsuario(models.Model):
         ]
 
     def __str__(self):
-        return f"Preferência para Usuário {self.usuario_id}"
+        return f"Preferência de {self.usuario.email}"
 
 # LogAuditoria
 class LogAuditoria(models.Model):

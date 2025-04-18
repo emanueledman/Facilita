@@ -1,8 +1,8 @@
-import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from sistema.models import Instituicao, Filial, Categoria, PerfilUsuario
+import uuid
+from sistema.models import Instituicao, Filial, Categoria
 
 # Enums
 class DiaSemana(models.TextChoices):
@@ -64,6 +64,7 @@ class Fila(models.Model):
 class Ticket(models.Model):
     STATUS_ESCOLHAS = [
         ('Pendente', 'Pendente'),
+        ('Chamado', 'Chamado'),
         ('Atendido', 'Atendido'),
         ('Cancelado', 'Cancelado'),
     ]
@@ -94,7 +95,7 @@ class Ticket(models.Model):
         ]
 
     def __str__(self):
-        return f"Ticket {self.numero_ticket} para Fila {self.fila_id}"
+        return f"Ticket {self.numero_ticket} para Fila {self.fila.servico}"
 
 # HorarioFila
 class HorarioFila(models.Model):
@@ -123,8 +124,8 @@ class EtiquetaServico(models.Model):
         indexes = [
             models.Index(fields=['id']),
             models.Index(fields=['etiqueta']),
-            models.Index(fields=['fila']),
+            models.Index(fields=['fila'], name='idx_etiqueta_fila_id'),
         ]
 
     def __str__(self):
-        return f"{self.etiqueta} para Fila {self.fila_id}"
+        return f"{self.etiqueta} para Fila {self.fila.servico}"
