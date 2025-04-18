@@ -1,10 +1,16 @@
-from django.urls import path
-from . import views
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
-app_name = 'sistema'
+class HealthCheck(APIView):
+    def get(self, request):
+        return Response({"status": "ok"})
 
 urlpatterns = [
-    path('instituicoes/', views.ListarInstituicoes.as_view(), name='listar_instituicoes'),
-    path('filiais/', views.ListarFiliais.as_view(), name='listar_filiais'),
-    path('categorias/', views.ListarCategorias.as_view(), name='listar_categorias'),
+    path('', HealthCheck.as_view(), name='health_check'),
+    path('admin/', admin.site.urls),
+    path('api/sistema/', include('sistema.urls')),
+    path('api/fila_online/', include('fila_online.urls')),
+    path('accounts/', include('allauth.urls')),
 ]
