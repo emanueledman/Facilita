@@ -8,7 +8,7 @@ import uuid
 
 class ListarFilas(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request):
         filas = Fila.objects.all()
         serializer = FilaSerializer(filas, many=True)
@@ -16,7 +16,7 @@ class ListarFilas(APIView):
 
 class DetalheFila(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request, pk):
         try:
             fila = Fila.objects.get(pk=pk)
@@ -27,13 +27,13 @@ class DetalheFila(APIView):
 
 class EmitirTicket(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def post(self, request, pk):
         try:
             fila = Fila.objects.get(pk=pk)
             if fila.tickets_ativos >= fila.limite_diario:
                 return Response({"error": "Limite diário atingido"}, status=400)
-            
+                
             numero_ticket = fila.ticket_atual + 1
             ticket = Ticket.objects.create(
                 fila=fila,
@@ -45,6 +45,7 @@ class EmitirTicket(APIView):
                 status='Pendente',
                 emitido_em=timezone.now()
             )
+            
             fila.ticket_atual = numero_ticket
             fila.tickets_ativos += 1
             fila.save()
@@ -56,7 +57,7 @@ class EmitirTicket(APIView):
 
 class ListarTickets(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request):
         tickets = Ticket.objects.filter(usuario=request.user)
         serializer = TicketSerializer(tickets, many=True)

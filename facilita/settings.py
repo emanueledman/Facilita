@@ -174,6 +174,7 @@ LOGGING = {
         },
     },
 }
+APPEND_SLASH = True 
 
 # Segurança
 SECURE_SSL_REDIRECT = os.getenv('DJANGO_SECURE_SSL_REDIRECT', 'True') == 'True'

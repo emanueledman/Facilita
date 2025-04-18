@@ -6,7 +6,7 @@ from .serializers import InstituicaoSerializer, FilialSerializer, CategoriaSeria
 
 class ListarInstituicoes(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request):
         instituicoes = Instituicao.objects.all()
         serializer = InstituicaoSerializer(instituicoes, many=True)
@@ -14,7 +14,7 @@ class ListarInstituicoes(APIView):
 
 class ListarFiliais(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request):
         filiais = Filial.objects.all()
         serializer = FilialSerializer(filiais, many=True)
@@ -22,7 +22,7 @@ class ListarFiliais(APIView):
 
 class ListarCategorias(APIView):
     permission_classes = [IsAuthenticated]
-
+    
     def get(self, request):
         categorias = Categoria.objects.all()
         serializer = CategoriaSerializer(categorias, many=True)
