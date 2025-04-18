@@ -1,0 +1,46 @@
+# Arquivos Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.egg-info/
+
+# Arquivos de ambiente
+.env
+.env.local
+*.env
+*.env.*
+.envrc
+.venv
+# Arquivos de banco de dados
+*.sqlite3
+*.db
+
+# Arquivos de log
+*.log
+debug.log
+
+# Arquivos estáticos coletados
+/staticfiles/
+
+# Arquivos de mídia
+/media/
+
+# Arquivos de desenvolvimento
+*.pid
+*.seed
+*.swp
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos do IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos de build
+/dist/
+build/
