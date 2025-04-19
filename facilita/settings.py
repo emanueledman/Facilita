@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'channels',
     'sistema.apps.SistemaConfig',
     'fila_online.apps.FilaOnlineConfig',
     'django_celery_beat',
