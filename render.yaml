@@ -1,0 +1,107 @@
+services:
+  - type: web
+    name: facilita-web
+    env: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate
+      python manage.py collectstatic --noinput
+      python manage.py shell < fila_online/create_schedule.py
+    startCommand: gunicorn facilita.wsgi:application
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: False
+      - key: DJANGO_SECURE_SSL_REDIRECT
+        value: True
+      - key: DJANGO_CSRF_COOKIE_SECURE
+        value: True
+      - key: DJANGO_SESSION_COOKIE_SECURE
+        value: True
+      - key: DB_URL
+        fromDatabase:
+          name: facilita-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: facilita-redis
+          type: redis
+          property: connectionString
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com
+      - key: PYTHON_VERSION
+        value: 3.10.12
+    disks:
+      - name: models
+        mountPath: /opt/render/project/models
+        sizeGB: 1
+
+  - type: worker
+    name: facilita-celery
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A facilita worker --loglevel=info
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        fromService:
+          name: facilita-web
+          type: web
+          envVarKey: DJANGO_SECRET_KEY
+      - key: DB_URL
+        fromDatabase:
+          name: facilita-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: facilita-redis
+          type: redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.10.12
+    disks:
+      - name: models
+        mountPath: /opt/render/project/models
+        sizeGB: 1
+
+  - type: worker
+    name: facilita-celery-beat
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A facilita beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        fromService:
+          name: facilita-web
+          type: web
+          envVarKey: DJANGO_SECRET_KEY
+      - key: DB_URL
+        fromDatabase:
+          name: facilita-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: facilita-redis
+          type: redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.10.12
+    disks:
+      - name: models
+        mountPath: /opt/render/project/models
+        sizeGB: 1
+
+  - type: redis
+    name: facilita-redis
+    ipAllowList: []
+    plan: free
+    maxmemoryPolicy: noeviction
+
+databases:
+  - name: facilita-db
+    databaseName: facilita
+    user: facilita_user
+    plan: free
